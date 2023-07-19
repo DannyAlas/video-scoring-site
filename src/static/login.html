@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+    <head>
+        <meta charset="utf-8">
+        <link id="favicon" rel="icon" type="image/x-icon" href="../public/favicon.ico">
+        <title>Jazzy Image Host</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    </head>
+
+    <div class="container mt-5" >
+        <form class="p-5 mt-5" >         
+            <!-- Submit button -->
+            <button type="button" class="btn btn-primary btn-block mb-4">Sign in with CU</button>
+          </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js'
+        
+        // If you enabled Analytics in your project, add the Firebase SDK for Google Analytics
+        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-analytics.js'
+        
+        // Add Firebase products that you want to use
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js'
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAJgxzDc4R8O-0K2ERniiWSbeCIvyemw24",
+            authDomain: "video-scoring-7d4f4.firebaseapp.com",
+            projectId: "video-scoring-7d4f4",
+            storageBucket: "video-scoring-7d4f4.appspot.com",
+            messagingSenderId: "1001007622730",
+            appId: "1:1001007622730:web:9dfcf5dabdb26c705214b3",
+            measurementId: "G-KK7GJJ1B6S"
+        };
+        // set the global variables
+
+        var user = null
+        const app =  initializeApp(firebaseConfig);
+        
+        // Create a provider for Google sign-in
+        const provider = new GoogleAuthProvider();
+        
+        // Handle sign-in button click
+        function signInWithGoogle() {
+            const auth = getAuth();
+            signInWithPopup(auth, provider)
+            .then((result) => {
+                // User is signed in
+                user = result.user;
+                console.log('Signed in user:', user);
+                // get session token from api then redirect to home page
+                fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(user)
+                })
+                window.location.href = "/"
+                
+            })
+            .catch((error) => {
+                // An error occurred during sign-in
+                console.error('Error signing in:', error);
+            });
+        }
+        document.querySelector("button").addEventListener("click", signInWithGoogle)
+    </script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-image: url("https://i.danielalas.com/4012f3fd");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-color: rgb(41, 57, 74);
+            background-blend-mode: multiply;
+        }
+        /* center the form on the page */
+        form {
+            margin: 0 auto;
+            width: 600px;
+            padding: 1em;
+            border-radius: 1em;
+        }
+        .form-label {
+            color: #a5a5a5;
+        }
+        /* style the input fields */
+        input {
+            color: #373737;
+            width: 100%;
+            padding: 0.5em;
+            margin: 0.5em 0;
+        }
+        /* style the submit button */
+        button {
+            padding: 0.7em;
+            color: #a5a5a5;
+            background-color: #337ab7;
+            border: 0;
+            border-radius: 0.3em;
+            cursor: pointer;
+        }
+    </style>
+</html>
