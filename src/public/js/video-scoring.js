@@ -32,8 +32,14 @@ xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
 xhr.onload = function() {
     if (xhr.status === 200) {
         var user = JSON.parse(xhr.responseText)
+        // if login button exists, remove it
+        var loginButton = document.getElementById("loginButton")
+        if (loginButton) {
+            loginButton.remove()
+        }
         document.getElementById('profileIcon').src = user.photoUrl
-              
+
+                
         
         // a function that gets the timestamps for a video
         function getTimestamps() {
@@ -409,8 +415,18 @@ xhr.onload = function() {
             })
         })
     } else {
-        // if the user is not logged in, show the login button
-        document.getElementById('loginButton').style.display = 'block'
+        document.getElementById('profileDropdown').style.display = "none"
+        // in its place, add a login button
+        var loginButton = document.createElement("button")
+        // id for the login button
+        loginButton.id = "loginButton"
+        loginButton.innerHTML = "Login"
+        loginButton.classList.add("btn")
+        loginButton.classList.add("btn-primary")
+        loginButton.addEventListener("click", function() {
+            window.location.href = "/login"
+        })
+        document.getElementById("profileDropdown").parentElement.appendChild(loginButton)
     }
 }
 xhr.send()

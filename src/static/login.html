@@ -59,9 +59,17 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(user)
+                }).then((response) => {
+                    if (response.status == 200) {
+                        window.location.href = "/"
+                    } else {
+                        response.json().then((data) => {
+                            alert(data.message)
+                        })
+                    }
+                }).catch((error) => {
+                    alert(error)
                 })
-                window.location.href = "/"
-                
             })
             .catch((error) => {
                 // An error occurred during sign-in
@@ -73,7 +81,7 @@
     <style>
         body {
             font-family: sans-serif;
-            background-image: url("https://i.danielalas.com/4012f3fd");
+            background-image: url("/public/background.png");
             background-repeat: no-repeat;
             background-size: cover;
             background-color: rgb(41, 57, 74);

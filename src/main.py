@@ -64,6 +64,10 @@ app.add_middleware(
 )
 app.mount("/public", StaticFiles(directory="./src/public"), name="public")
 
+#redirect to /
+@app.get("/home")
+async def home(request: Request):
+    return RedirectResponse(url="/", status_code=302)
 
 # on the root endpoint, return the ui if there is nothing after the slash
 @app.get("/")
@@ -98,7 +102,9 @@ async def login(request: Request):
     try:
         # if the users email is not a company email, return an error
         if not str(user["email"]).endswith("colorado.edu"):
-            raise Exception("Must use a Colorado.edu email address")
+            return JSONResponse(
+                content={"message": "You must use a colorado.edu email"}, status_code=400
+            )
 
         # create session cookie
         cookie = auth.create_session_cookie(
@@ -489,6 +495,8 @@ def _get_range_header(range_header: str, file_size: int) -> tuple[int, int]:
 def range_requests_response(request: Request):
     """Returns StreamingResponse using Range Requests of a given file"""
     file_path = os.path.join(VIDEOS_DIR, request.path_params["video_id"])
+    if not os.path.exists(file_path):
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="File not found")
     file_size = os.stat(file_path).st_size
     range_header = request.headers.get("range")
     headers = {
