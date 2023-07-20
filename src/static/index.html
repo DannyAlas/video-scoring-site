@@ -11,6 +11,7 @@
     <title>Video Scoring</title>
     <link id="favicon" rel="icon" type="image/x-icon" href="public/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="https://vjs.zencdn.net/8.3.0/video-js.css" rel="stylesheet" />
 
     <style>
       .bd-placeholder-img {
@@ -262,18 +263,25 @@
             </div>
         </div>
     </div>
+    <!-- show keybindings button -->
     <div class="container mt-5">
         <div class="row">
             <div class="col">
-                <h2>Keybindings</h2>
-                <table class="table table-striped">
+                <button type="button" class="btn btn-primary" id="showKeybindingsButton">Show Keybindings</button>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col">
+                <table class="table table-striped" id="keybindingsTable" style="display: none;">
                     <thead>
                         <tr>
                             <th scope="col">Key</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="keybindingsTable">
+                    <tbody id="keybindingsTableBody">
                     </tbody>
                 </table>
             </div>
@@ -284,10 +292,27 @@
         <div class="row">
             <div class="col">
                 <h2 id="playerTitle">Video Player</h2>
-                <video id="videoPlayer" controls>
+                <!-- <video id="videoPlayer" controls>
                     <source src="" type="video/mp4">
                     Your browser does not support the video tag.
-                </video>
+                </video> -->
+                <video
+                id="videoPlayer"
+                class="video-js"
+                controls
+                preload="auto"
+                data-setup='{
+                    "fluid": true,
+                    "playbackRates": [0.5, 1, 1.5, 2],
+                    "controlBar": {
+                        "volumePanel": {
+                        "inline": false
+                        }
+                    }
+                }'
+              >
+                <source src="/video/A676_BOX5_041de114-4403-4505-aa66-d29ee56d298b.mp4" type="video/mp4" />
+              </video>
             </div>
         </div>
     </div>
@@ -468,17 +493,19 @@
                             row.addEventListener("click", function() {
                                 CURRENT_VIDEO_ID = video.id
                                 // update the video player
-                                var videoPlayer = document.getElementById("videoPlayer")
-                                videoPlayer.src = "/video/" + video.id + ".mp4"
-                                videoPlayer.load()
-                                // update the video name
-                                var videoName = document.getElementById("playerTitle")
-                                videoName.innerHTML = video.id
-                                // update the video list
-                                var videoList = document.getElementById("videoList")
-                                var rows = videoList.getElementsByTagName("tr")
-                                // update the timestamps
-                                getTimestamps(video.id)
+                                var videoPlayer = videojs.getPlayer("videoPlayer")
+                                videoPlayer.src({type: 'video/mp4', src: "/video/" + video.id + ".mp4"});
+                                videoPlayer.ready(function() {
+                                    var videoName = document.getElementById("playerTitle")
+                                    videoName.innerHTML = video.id
+                                    // update the video list
+                                    var videoList = document.getElementById("videoList")
+                                    var rows = videoList.getElementsByTagName("tr")
+                                    // update the timestamps
+                                    getTimestamps(video.id)
+                                    videoPlayer.style.display = "block"
+                                    videoPlayer.style.margin = "auto"
+                                })
     
                             })
                         })
@@ -490,7 +517,7 @@
             // a function to populate the keybindings table
             function getKeybindings() {
                 // to the keybindings table add the keybindings
-                var keybindingsTable = document.getElementById("keybindingsTable")
+                var keybindingsTable = document.getElementById("keybindingsTableBody")
                 keybindingsTable.innerHTML = ""
                 // get the keybindings from the server
                 var xhr = new XMLHttpRequest()
@@ -545,7 +572,19 @@
                 }
                 xhr.send()
             })
-    
+
+            // an event for the show keybindings button
+            document.getElementById("showKeybindingsButton").addEventListener("click", function() {
+                // get the keybindings table
+                var keybindingsTable = document.getElementById("keybindingsTable")
+                // if the table is hidden, show it
+                if (keybindingsTable.style.display === "none") {
+                    keybindingsTable.style.display = "table"
+                } else {
+                    keybindingsTable.style.display = "none"
+                }
+            })
+
             // an eventlister for the spacebar to which will add the current video timestamp to the table
             document.addEventListener("keydown", function(e) {
                 // arrow keys move the video forward and backward one frame
@@ -785,6 +824,7 @@
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="https://vjs.zencdn.net/8.3.0/video.min.js"></script>
 <style>
     #videoListDiv {
         /* limit height */

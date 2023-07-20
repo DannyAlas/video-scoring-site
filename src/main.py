@@ -17,7 +17,7 @@ from google.cloud import firestore
 
 load_dotenv()
 CHUNK_SIZE = 1024 * 1024
-VIDEOS_DIR = "/mnt/prox-share/media/Media/Other/lab/shock videos"
+VIDEOS_DIR = r"D:\Media\onedrive\UCB-O365\Rootlab - Shock\mp4s"
 logging.basicConfig(
     level=logging.WARNING, format="%(asctime)s - %(levelname)s: %(message)s"
 )
